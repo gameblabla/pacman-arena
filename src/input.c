@@ -30,7 +30,12 @@ static const char cvsid[] =
 
 #include "screen.h"
 
+#ifdef SDL2
+#define SDLK_LAST SDLK_ENDCALL
+char keyboard_map[SDLK_ENDCALL];
+#else
 char keyboard_map[SDLK_LAST];
+#endif
 
 void input_reset(void)
 {

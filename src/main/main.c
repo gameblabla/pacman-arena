@@ -26,7 +26,9 @@ static const char cvsid[] =
 
 #include <GL/gl.h>
 #include <SDL.h>
+#ifdef NETWORKING_GAME
 #include <SDL_net.h>
+#endif
 #include <stdlib.h>
 #include <string.h>
 
@@ -62,11 +64,13 @@ int main(int argc, char **argv)
 	object_read_file("gfx/ghost-green-returning.3d", &last_update);
 */
 
+#ifdef NETWORKING_GAME
 	if(argc > 1 && strcmp(argv[1], "--server") == 0)
 		net_server_init();
 
 	if(argc > 1 && strcmp(argv[1], "--connect") == 0)
 		net_client_init(argv[2]);
+#endif
 
 	for(;;)
 		menu_run();

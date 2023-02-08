@@ -40,7 +40,7 @@ static const char cvsid[] =
 #define GAMMA_DIR_FADEIN 1
 #define GAMMA_DIR_FADEOUT 2
 
-static struct screen scr;
+struct screen scr;
 static float cur_gamma, target_gamma;
 static int gamma_direction;
 static float last_gamma;
@@ -70,8 +70,10 @@ void screen_init(void)
 
 	screen_switch_resolution();
 
+#ifndef SDL2
 	SDL_WM_SetCaption("Pacman Arena", "Pacman Arena");
 	SDL_ShowCursor(SDL_DISABLE);
+#endif
 
 	printf("%s\n", glGetString(GL_RENDERER));
 	printf("%s\n", glGetString(GL_VENDOR));
@@ -85,6 +87,42 @@ void screen_switch_resolution(void)
 	gfx_unload_all();
 	object_release_dlists();
 	
+#ifdef SDL2
+	scr.surface = SDL_CreateWindow("Pacman Arena",
+	SDL_WINDOWPOS_UNDEFINED,
+	SDL_WINDOWPOS_UNDEFINED,
+	0, 0,
+	SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_OPENGL);
+	
+	scr.rend = SDL_CreateRenderer(scr.surface, -1, SDL_RENDERER_PRESENTVSYNC);
+
+	// Set resolution to whatever the screen uses
+	SDL_DisplayMode DM;
+	SDL_GetCurrentDisplayMode(0, &DM);
+	scr.width = DM.w;
+	scr.height = DM.h;
+	
+	//Nearest neighbor scaling
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, 0);
+	SDL_RenderSetLogicalSize(scr.rend, scr.width, scr.height);
+	
+	// Make sure background is black
+	SDL_SetRenderDrawColor(scr.rend, 0, 0, 0, 255);
+	SDL_RenderClear(scr.rend);
+	SDL_RenderPresent(scr.rend);
+	
+#ifdef LOW_END
+    SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
+    SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 6 );
+    SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 5 );
+    SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
+#endif
+	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+	
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+#else
 	scr.surface = SDL_SetVideoMode(scr.width, scr.height, scr.bpp, SDL_OPENGL | scr.fullscreen);
 	if(scr.surface == NULL)
 	{
@@ -93,6 +131,8 @@ void screen_switch_resolution(void)
 		SDL_Quit();
 		exit(1);
 	}
+#endif
+
 
 	screen_setup_viewports();
 
@@ -244,7 +284,11 @@ void screen_update_gamma(float delta)
 
 	if(last_gamma != gamma)
 	{
+		#ifdef SDL2
+		SDL_SetWindowBrightness(scr.surface, gamma);
+		#else
 		SDL_SetGamma(gamma, gamma, gamma);
+		#endif
 		last_gamma = gamma;
 	}
 }
@@ -252,5 +296,9 @@ void screen_update_gamma(float delta)
 void screen_reset_gamma(void)
 {
 	cur_gamma = target_gamma = last_gamma = 1.0;
+	#ifdef SDL2
+	SDL_SetWindowBrightness(scr.surface, cur_gamma);
+	#else
 	SDL_SetGamma(cur_gamma, cur_gamma, cur_gamma);
+	#endif
 }

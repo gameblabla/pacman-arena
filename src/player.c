@@ -25,11 +25,12 @@ static const char cvsid[] =
 #endif
 
 #include <GL/gl.h>
-#include <GL/glu.h>
 #include <SDL.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+
+#include "config.h"
 
 #include "object.h"
 #include "audio.h"
@@ -88,12 +89,12 @@ void player_add_new(struct game *game)
 	/* XXX - ugly ? UGLY! */
 	if(game->n_players == 1)
 	{
-		new->keys[KEY_UP] = SDLK_UP;
-		new->keys[KEY_DOWN] = SDLK_DOWN;
-		new->keys[KEY_LEFT] = SDLK_LEFT;
-		new->keys[KEY_RIGHT] = SDLK_RIGHT;
-		new->keys[KEY_FIRE] = SDLK_SPACE;
-		new->keys[KEY_BOMB] = SDLK_b;
+		new->keys[KEY_UP] = GAME_UP_BUTTON;
+		new->keys[KEY_DOWN] = GAME_DOWN_BUTTON;
+		new->keys[KEY_LEFT] = GAME_LEFT_BUTTON;
+		new->keys[KEY_RIGHT] = GAME_RIGHT_BUTTON;
+		new->keys[KEY_FIRE] = GAME_MISSILE_BUTTON;
+		new->keys[KEY_BOMB] = GAME_BOMB_BUTTON;
 	} else {
 		new->keys[KEY_UP] = SDLK_w;
 		new->keys[KEY_DOWN] = SDLK_s;

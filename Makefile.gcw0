@@ -1,18 +1,16 @@
-# SDL 1.2 (original version)
-
 PRGNAME     = pac.elf
-CC			= gcc
+CC			= /opt/gcw0-toolchain/bin/mipsel-linux-gcc
 NETWORK		= NO
 
-SRCDIR		= ./lib3ds ./src ./src/main
+SRCDIR		= ./lib3ds ./src ./src/main ./glues
 VPATH		= $(SRCDIR)
 SRC_C		= $(foreach dir, $(SRCDIR), $(wildcard $(dir)/*.c))
 OBJ_C		= $(notdir $(patsubst %.c, %.o, $(SRC_C)))
 OBJS		= $(OBJ_C)
 
-CFLAGS		= -O0 -g3 -Wall -Wextra -I/usr/include/SDL -Wno-write-strings -Isrc -Isrc/include -I. -Iplatform/generic
-CFLAGS		+= -DLSB_FIRST -std=gnu99 -DALIGN_DWORD -DNOYUV
-CFLAGS		+=  -Ilib3ds
+CFLAGS		= -Os -march=mips32r2 -flto -Wall -Wextra `/opt/gcw0-toolchain/mipsel-gcw0-linux-uclibc/sysroot/usr/bin/sdl2-config --cflags` -Wno-write-strings -Isrc -Isrc/include -I. -Iplatform/gcw0 -Iglues
+CFLAGS		+= -DLSB_FIRST -std=gnu99 -DSDL2
+CFLAGS		+= -Ilib3ds
 
 ifeq ($(NETWORK), YES)
 CFLAGS 		+= -DNETWORKING_GAME
@@ -24,9 +22,9 @@ else ifeq ($(PROFILE), APPLY)
 CFLAGS		+= -fprofile-use -fbranch-probabilities
 endif
 
-LDFLAGS     = -lc -lgcc -lm -lSDL -lSDL_mixer -lSDL_image -lGL -lGLU
+LDFLAGS     = -lc -lgcc -lm -lSDL2 -lSDL2_mixer -lSDL2_image -lGL -Wl,--as-needed -Wl,--gc-sections -s -flto
 ifeq ($(NETWORK), YES)
-LDFLAGS 	+= -lSDL_net
+LDFLAGS 	+= -lSDL2_net
 endif
 
 # Rules to make executable

@@ -22,6 +22,8 @@
 #ifndef _NET_H
 #define _NET_H
 
+#ifdef NETWORKING_GAME
+
 extern int server_running;
 extern int client_running;
 
@@ -52,5 +54,7 @@ void net_pack_byte(UDPpacket *pack, Uint8 value);
 void net_pack_int32(UDPpacket *pack, Uint32 value);
 void net_server_update(void);
 void net_client_update(void);
+
+#endif
 
 #endif

@@ -58,6 +58,8 @@ static const char cvsid[] =
 //#include "level-demo.h"
 //#include "level-1.h"
 
+#include "config.h"
+
 struct game *game_new(int game_type)
 {
 	struct game *ret;
@@ -119,7 +121,7 @@ void game_run(struct game *game)
 
 		input_update();
 		
-		if(input_kstate(SDLK_ESCAPE))
+		if(input_kstate(GAME_FORCE_EXIT_BUTTON))
 		{
 			audio_fade_music(500);
 			SDL_Delay(500);
@@ -153,7 +155,9 @@ void game_run(struct game *game)
 
 		if(SDL_GetTicks() - ticks >= 1000)
 		{
+			#ifdef LOGGING_DEBUG
 			printf("%d FPS\n", frames);
+			#endif
 			ticks = SDL_GetTicks();
 			frames = 0;
 		}
@@ -287,7 +291,9 @@ void game_do_victory_loop(struct game *game)
 			}
 			
 			if((ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_ESCAPE) ||
-				(ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_SPACE))
+				(ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_SPACE)
+				|| (ev.type == SDL_KEYDOWN && ev.key.keysym.sym == GAME_CONFIRM_BUTTON)
+				)
 			{
 				audio_fade_music(500);
 				SDL_Delay(500);
@@ -367,9 +373,10 @@ void game_do_defeat_loop(struct game *game)
 		
 		input_update();
 
-		if(input_kstate(SDLK_ESCAPE))
+		if(input_kstate(SDLK_ESCAPE) || input_kstate(GAME_CONFIRM_BUTTON))
 		{
 			input_kclear(SDLK_ESCAPE);
+			input_kclear(GAME_CONFIRM_BUTTON);
 			audio_fade_music(500);
 			SDL_Delay(500);
 			return;

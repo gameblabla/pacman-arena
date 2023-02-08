@@ -22,6 +22,10 @@
 #ifndef _SCREEN_H
 #define _SCREEN_H
 
+#ifdef SDL2
+#include <SDL.h>
+#endif
+
 struct viewport
 {
 	int ll_x, ll_y;	/* lower left corner */
@@ -38,8 +42,17 @@ struct screen
 	/* physical screen */
 	int width, height, bpp;
 	int fullscreen;
+#ifdef SDL2
+	SDL_Window *surface;
+	SDL_Renderer *rend;
+#else
 	SDL_Surface *surface;
+#endif
 };
+
+#ifdef SDL2
+#define SDL_FULLSCREEN SDL_WINDOW_FULLSCREEN
+#endif
 
 void screen_init(void);
 void screen_switch_resolution(void);

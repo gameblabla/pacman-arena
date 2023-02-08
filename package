@@ -1,0 +1,42 @@
+#!/bin/sh
+
+mkdir -p opk
+cp -r ./gfx opk
+cp -r ./sfx opk
+cp ./build/pac.elf opk/pac.elf
+cp ./icon.png opk/icon.png
+cp ./README opk/README.md
+
+# https://unix.stackexchange.com/questions/219268/how-to-add-new-lines-when-using-echo
+print()
+	case    ${IFS- } in
+	(\ *)   printf  %b\\n "$*";;
+	(*)     IFS=\ $IFS
+	printf  %b\\n "$*"
+	IFS=${IFS#?}
+esac
+
+
+print '#!/bin/sh
+LIBGL_ES=1 ./pac.elf
+' > opk/start.sh
+
+# Create GmenuNx entry file plus other things
+
+print '[Desktop Entry]
+Type=Application
+Name=Pacman Arena
+Comment=3D Pacman w/items
+Exec=sh start.sh
+Icon=icon
+Terminal=false
+Type=Application
+X-OD-NeedsJoystick=true
+Categories=games;
+X-OD-Manual=README.md
+Version=20220601
+' > opk/default."$1".desktop
+
+mksquashfs ./opk pacman-arena_"$1".opk -all-root -noappend -no-exports -no-xattrs
+
+rm -r opk

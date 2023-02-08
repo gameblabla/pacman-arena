@@ -43,6 +43,8 @@ static const char cvsid[] =
 #include "render.h"
 #include "render_bomb.h"
 
+extern struct screen scr;
+
 /*
   desenha um objecto
 */
@@ -429,7 +431,13 @@ void render_draw_colored_plane(GLfloat x, GLfloat y, GLfloat z, GLfloat color[3]
 void render_finish_frame(void)
 {
 	glFlush();
+	
+#ifdef SDL2
+	SDL_GL_SwapWindow(scr.surface);
+	SDL_RenderPresent(scr.rend);
+#else
 	SDL_GL_SwapBuffers();
+#endif
 }
 
 /*

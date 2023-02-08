@@ -24,7 +24,7 @@
 
 #include <SDL.h>
 
-extern char keyboard_map[SDLK_LAST];
+extern char keyboard_map[];
 
 void input_reset(void);
 void input_update(void);

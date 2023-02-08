@@ -26,7 +26,9 @@ static const char cvsid[] =
 
 #include <GL/gl.h>
 #include <SDL.h>
+#ifdef NETWORKING_GAME
 #include <SDL_net.h>
+#endif
 #include <stdlib.h>
 #include <math.h>
 
@@ -295,35 +297,37 @@ int menu(struct game *game, struct menu_entry *m, int n)
 
 		input_update();
 
-		if(input_kstate(SDLK_ESCAPE))
+		if(input_kstate(GAME_EXIT_BUTTON))
 		{
-			input_kclear(SDLK_ESCAPE);
+			input_kclear(GAME_EXIT_BUTTON);
 			return -1;
 		}
 
-		if(input_kstate(SDLK_RETURN))
+		if(input_kstate(GAME_CONFIRM_BUTTON))
 		{
-			input_kclear(SDLK_RETURN);
+			input_kclear(GAME_CONFIRM_BUTTON);
 			return selected;
 		}
 		
 		
-		if(input_kstate(SDLK_DOWN))
+		if(input_kstate(GAME_DOWN_BUTTON))
 		{
-			input_kclear(SDLK_DOWN);
+			input_kclear(GAME_DOWN_BUTTON);
 			selected = (selected + 1) % n;
 		}
 		
 		
-		if(input_kstate(SDLK_UP))
+		if(input_kstate(GAME_UP_BUTTON))
 		{
-			input_kclear(SDLK_UP);
+			input_kclear(GAME_UP_BUTTON);
 			selected = (selected + n - 1) % n;
 		}
 		
 		diff = SDL_GetTicks() - last_update;
+#ifdef NETWORKING_GAME
 		if(server_running)
 			net_server_update();
+#endif
 
 		game_update(game, (float)diff / 1000);
 		last_update = SDL_GetTicks();
