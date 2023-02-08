@@ -18,9 +18,9 @@ esac
 
 
 print '#!/bin/sh
-LIBGL_ES=1 LIBGL_SHRINK=2 LIBGL_BLENDHACK=1 LIBGL_SILENTSTUB=1 LIBGL_NOBANNER=1 ./pac.elf
+LIBGL_ES=1 LIBGL_SHRINK=2 LIBGL_BLENDHACK=1 ./pac.elf
 ' > opk/start.sh
-
+g
 # Create GmenuNx entry file plus other things
 
 print '[Desktop Entry]

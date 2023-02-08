@@ -44,6 +44,10 @@ struct screen scr;
 static float cur_gamma, target_gamma;
 static int gamma_direction;
 static float last_gamma;
+#ifdef TINYGL
+#include "zbuffer.h"
+ZBuffer* frameBuffer;
+#endif
 
 /*
   initializes the screen
@@ -123,7 +127,31 @@ void screen_switch_resolution(void)
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 #else
+
+#ifdef TINYGL
+	scr.surface = SDL_SetVideoMode(scr.width, scr.height, scr.bpp, SDL_SWSURFACE | scr.fullscreen);
+	
+	/*if (TGL_FEATURE_RENDER_BITS == 32)
+		frameBuffer = ZB_open(winSizeX, winSizeY, ZB_MODE_RGBA, 0);
+	else*/
+	frameBuffer = ZB_open(scr.width, scr.height, ZB_MODE_5R6G5B, 0);
+		
+	if (!frameBuffer) {
+		printf("\nZB_open failed!");
+		exit(1);
+	}
+	glInit(frameBuffer);
+
+	// Print version info
+	printf("\nVersion string:\n%s", glGetString(GL_VERSION));
+	printf("\nVendor string:\n%s", glGetString(GL_VENDOR));
+	printf("\nRenderer string:\n%s", glGetString(GL_RENDERER));
+	printf("\nExtensions string:\n%s", glGetString(GL_EXTENSIONS));
+	printf("\nLicense string:\n%s", glGetString(GL_LICENSE));
+#else
+	printf("OpenGL normal build\n");
 	scr.surface = SDL_SetVideoMode(scr.width, scr.height, scr.bpp, SDL_OPENGL | scr.fullscreen);
+#endif
 	if(scr.surface == NULL)
 	{
 		printf("screen_switch_resolution: couldn't set mode (%dx%dx%d %s)\n",
