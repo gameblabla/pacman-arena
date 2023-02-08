@@ -1,5 +1,7 @@
 # PacMan Arena
 
+![](screenshot1.png)
+
 This was made by a student (subtil, subtil@student.dei.uc.pt) and posted on sourceforge.
 The game is mostly playable but isn't entirely finished.
 It's still good for quick play sessions though and is quite fun.
