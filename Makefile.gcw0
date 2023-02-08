@@ -8,7 +8,8 @@ SRC_C		= $(foreach dir, $(SRCDIR), $(wildcard $(dir)/*.c))
 OBJ_C		= $(notdir $(patsubst %.c, %.o, $(SRC_C)))
 OBJS		= $(OBJ_C)
 
-CFLAGS		= -Os -march=mips32r2 -flto -Wall -Wextra `/opt/gcw0-toolchain/mipsel-gcw0-linux-uclibc/sysroot/usr/bin/sdl2-config --cflags` -Wno-write-strings -Isrc -Isrc/include -I. -Iplatform/gcw0 -Iglues
+CFLAGS		= -O2 -march=mips32r2 -flto -Wall -Wextra 
+CFLAGS		+= `/opt/gcw0-toolchain/mipsel-gcw0-linux-uclibc/sysroot/usr/bin/sdl2-config --cflags` -Wno-write-strings -Isrc -Isrc/include -I. -Iplatform/gcw0 -Iglues
 CFLAGS		+= -DLSB_FIRST -std=gnu99 -DSDL2
 CFLAGS		+= -Ilib3ds
 

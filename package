@@ -3,7 +3,7 @@
 mkdir -p opk
 cp -r ./gfx opk
 cp -r ./sfx opk
-cp ./build/pac.elf opk/pac.elf
+cp ./pac.elf opk/pac.elf
 cp ./icon.png opk/icon.png
 cp ./README opk/README.md
 
@@ -18,7 +18,7 @@ esac
 
 
 print '#!/bin/sh
-LIBGL_ES=1 ./pac.elf
+LIBGL_ES=1 LIBGL_SHRINK=2 LIBGL_BLENDHACK=1 LIBGL_SILENTSTUB=1 LIBGL_NOBANNER=1 ./pac.elf
 ' > opk/start.sh
 
 # Create GmenuNx entry file plus other things
