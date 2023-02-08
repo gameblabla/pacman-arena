@@ -44,10 +44,6 @@ static const char cvsid[] =
 #include "render_bomb.h"
 
 extern struct screen scr;
-#ifdef TINYGL
-#include "zbuffer.h"
-extern ZBuffer* frameBuffer;
-#endif
 
 /*
   desenha um objecto
@@ -440,14 +436,7 @@ void render_finish_frame(void)
 	SDL_GL_SwapWindow(scr.surface);
 	SDL_RenderPresent(scr.rend);
 #else
-
-#ifdef TINYGL
-	ZB_copyFrameBuffer(frameBuffer, scr.surface->pixels, scr.surface->pitch);
-	SDL_Flip(scr.surface);
-#else
 	SDL_GL_SwapBuffers();
-#endif
-	
 #endif
 }
 

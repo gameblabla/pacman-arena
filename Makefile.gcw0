@@ -2,14 +2,15 @@ PRGNAME     = pac.elf
 CC			= /opt/gcw0-toolchain/bin/mipsel-linux-gcc
 NETWORK		= NO
 
-SRCDIR		= ./lib3ds ./src ./src/main ./glues
+SRCDIR		= ./lib3ds ./src ./src/main 
+SRCDIR		+= ./GLU/src/libutil GLU/src/libtess GLU/src/libnurbs/interface GLU/src/libnurbs/internals GLU/src/libnurbs/nurbtess
 VPATH		= $(SRCDIR)
 SRC_C		= $(foreach dir, $(SRCDIR), $(wildcard $(dir)/*.c))
 OBJ_C		= $(notdir $(patsubst %.c, %.o, $(SRC_C)))
 OBJS		= $(OBJ_C)
 
-CFLAGS		= -O0 -g3 -Wall -Wextra 
-CFLAGS		+= `/opt/gcw0-toolchain/mipsel-gcw0-linux-uclibc/sysroot/usr/bin/sdl2-config --cflags` -Wno-write-strings -Isrc -Isrc/include -I. -Iplatform/gcw0 -Iglues
+CFLAGS		= -Os -fdata-sections -ffunction-sections -flto -Wall -Wextra 
+CFLAGS		+= `/opt/gcw0-toolchain/mipsel-gcw0-linux-uclibc/sysroot/usr/bin/sdl2-config --cflags` -Wno-write-strings -Isrc -Isrc/include -I. -Iplatform/gcw0 -IGLU/src/include -IGLU/include
 CFLAGS		+= -DLSB_FIRST -std=gnu99 -DSDL2
 CFLAGS		+= -Ilib3ds
 
@@ -23,7 +24,7 @@ else ifeq ($(PROFILE), APPLY)
 CFLAGS		+= -fprofile-use -fbranch-probabilities
 endif
 
-LDFLAGS     = -lc -lgcc -lm -lSDL2 -lSDL2_mixer -lSDL2_image -lGL
+LDFLAGS     = -lc -lgcc -lm -lSDL2 -lSDL2_mixer -lSDL2_image -lGL -s -flto -Wl,--as-needed -Wl,--gc-sections
 ifeq ($(NETWORK), YES)
 LDFLAGS 	+= -lSDL2_net
 endif
