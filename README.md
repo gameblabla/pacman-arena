@@ -14,3 +14,9 @@ Select : Exit
 # Graphics
 
 Export as TGA without RLE Compression and Top Left Origin
+
+# Status
+
+Linux x64 : Working
+
+GCW0/RG-350 : Gets to the titlescreen but when starting a game, it crashes 3 seconds after.
