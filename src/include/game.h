@@ -104,7 +104,11 @@ struct camera
 };
 
 /* frames / segundo */
+#ifdef LOW_END
+#define ANIM_FPS 15.0
+#else
 #define ANIM_FPS 30.0
+#endif
 
 struct game *game_new(int game_type);
 void game_free(struct game *game);

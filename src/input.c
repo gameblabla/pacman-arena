@@ -52,7 +52,6 @@ void input_update(void)
 {
 	SDL_Event ev;
 	
-
 	while(SDL_PollEvent(&ev))
 	{
 			switch(ev.type)

@@ -3,7 +3,7 @@
 #define SCREEN_BITDEPTH_GAME 16
 
 #define NO_RESOLUTION_OPTION 1
-#define FULLSCREEN 1
+//#define FULLSCREEN 1
 #define LOW_END 1
 #define NOVSYNC 1
 

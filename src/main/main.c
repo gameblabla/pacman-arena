@@ -53,6 +53,8 @@ int main(int argc, char **argv)
 
 	screen_init();
 	audio_init();
+	
+	load_map_assets();
 
 	/* preload */
 /*

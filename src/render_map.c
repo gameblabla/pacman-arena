@@ -42,23 +42,58 @@ static const char cvsid[] =
 
 #include "map.h"
 
+
+static struct object *wall[12];
+#define WALL_HORIZONTAL 0
+#define WALL_LL			1
+#define WALL_LR			2
+#define WALL_UL			3
+#define WALL_UR			4
+#define WALL_VERTICAL	5
+
+static struct image_rgba32 *food = NULL;
+static struct image_rgba32 *rocket_lightmap = NULL;
+static GLUquadricObj *sphere = NULL;
+static struct image_rgba32 *missile_texture = NULL;
+
+/* It's better to preload the graphics than to have to run a condition that runs in a loop each time...
+ * We want to avoid a potential CPU bottleneck at least.
+*/
+void load_map_assets()
+{
+	int nframes;
+	wall[WALL_HORIZONTAL] = object_read_file("gfx/wall-horizontal.3d", &nframes);
+	wall[WALL_VERTICAL] = object_read_file("gfx/wall-vertical.3d", &nframes);
+	wall[WALL_LL] = object_read_file("gfx/wall-ll.3d", &nframes);
+	wall[WALL_LR] = object_read_file("gfx/wall-lr.3d", &nframes);
+	wall[WALL_UL] = object_read_file("gfx/wall-ul.3d", &nframes);
+	wall[WALL_UR] = object_read_file("gfx/wall-ur.3d", &nframes);
+	
+	food = gfx_get("gfx/dot-yellow.tga");
+	gfx_alpha_from_intensity("gfx/dot-yellow.tga");
+	gfx_upload_texture("gfx/dot-yellow.tga");
+	
+	rocket_lightmap = gfx_get("gfx/rocket-highlight.tga");
+	gfx_alpha_from_intensity("gfx/rocket-highlight.tga");
+	gfx_upload_texture("gfx/rocket-highlight.tga");
+	
+	sphere = gluNewQuadric();
+	gluQuadricNormals(sphere, GLU_FLAT);
+	gluQuadricTexture(sphere, GLU_FALSE);
+	gluQuadricOrientation(sphere, GLU_OUTSIDE);
+	gluQuadricDrawStyle(sphere, GLU_FILL);
+	
+	missile_texture = gfx_get("gfx/rocket-highlight.tga");
+	gfx_upload_texture("gfx/rocket-highlight.tga");
+}
+
+
 /*
   prepara-se para desenhar um tile do mapa
 */
 void map_setup_wall(struct game *game, int x, int y)
 {
 	struct map *map;
-#if 0
-	static struct image_rgba32 *rocket_lightmap = NULL;
-	int c;
-
-	if(rocket_lightmap == NULL)
-	{
-		rocket_lightmap = gfx_get("gfx/rocket-highlight.tga");
-		gfx_alpha_from_intensity("gfx/rocket-highlight.tga");
-		gfx_upload_texture("gfx/rocket-highlight.tga");
-	}
-#endif
 
 	map = game->map;
 
@@ -157,18 +192,8 @@ void map_lightmap_param_rocket(GLfloat params[4], struct game *game, int x, int 
 */
 void map_draw_vertical_wall(struct game *game, int x, int y)
 {
-	static struct object *wall = NULL;
-	
 	map_setup_wall(game, x, y);
-
-	if(wall == NULL)
-	{
-		int nframes;
-
-		wall = object_read_file("gfx/wall-vertical.3d", &nframes);
-	}
-
-	render_dlist(wall, NULL);
+	render_dlist(wall[WALL_VERTICAL], NULL);
 }
 
 /*
@@ -176,19 +201,8 @@ void map_draw_vertical_wall(struct game *game, int x, int y)
 */
 void map_draw_horizontal_wall(struct game *game, int x, int y)
 {
-	static struct object *wall = NULL;
-
 	map_setup_wall(game, x, y);
-
-	if(wall == NULL)
-	{
-		int nframes;
-
-		wall = object_read_file("gfx/wall-horizontal.3d", &nframes);
-		render_compile_dlist(wall);
-	}
-
-	render_dlist(wall, NULL);
+	render_dlist(wall[WALL_HORIZONTAL], NULL);
 }
 
 /*
@@ -196,19 +210,8 @@ void map_draw_horizontal_wall(struct game *game, int x, int y)
 */
 void map_draw_ll_wall(struct game *game, int x, int y)
 {
-	static struct object *wall = NULL;
-
 	map_setup_wall(game, x, y);
-
-	if(wall == NULL)
-	{
-		int nframes;
-
-		wall = object_read_file("gfx/wall-ll.3d", &nframes);
-		render_compile_dlist(wall);
-	}
-
-	render_dlist(wall, NULL);
+	render_dlist(wall[WALL_LL], NULL);
 }
 
 /*
@@ -216,19 +219,8 @@ void map_draw_ll_wall(struct game *game, int x, int y)
 */
 void map_draw_lr_wall(struct game *game, int x, int y)
 {
-	static struct object *wall = NULL;
-
 	map_setup_wall(game, x, y);
-
-	if(wall == NULL)
-	{
-		int nframes;
-
-		wall = object_read_file("gfx/wall-lr.3d", &nframes);
-		render_compile_dlist(wall);
-	}
-
-	render_dlist(wall, NULL);
+	render_dlist(wall[WALL_LR], NULL);
 }
 
 /*
@@ -236,19 +228,8 @@ void map_draw_lr_wall(struct game *game, int x, int y)
 */
 void map_draw_ur_wall(struct game *game, int x, int y)
 {
-	static struct object *wall = NULL;
-
 	map_setup_wall(game, x, y);
-
-	if(wall == NULL)
-	{
-		int nframes;
-
-		wall = object_read_file("gfx/wall-ur.3d", &nframes);
-		render_compile_dlist(wall);
-	}
-
-	render_dlist(wall, NULL);
+	render_dlist(wall[WALL_UR], NULL);
 }
 
 /*
@@ -256,35 +237,15 @@ void map_draw_ur_wall(struct game *game, int x, int y)
 */
 void map_draw_ul_wall(struct game *game, int x, int y)
 {
-	static struct object *wall = NULL;
-
 	map_setup_wall(game, x, y);
-
-	if(wall == NULL)
-	{
-		int nframes;
-
-		wall = object_read_file("gfx/wall-ul.3d", &nframes);
-		render_compile_dlist(wall);
-	}
-
-	render_dlist(wall, NULL);
+	render_dlist(wall[WALL_UL], NULL);
 }
 
 /*
   desenha comida do pacman em (x,y) no mapa
 */
 void map_draw_pacman_food(struct map *map, int x, int y)
-{
-	static struct image_rgba32 *food = NULL;
-
-	if(food == NULL)
-	{
-		food = gfx_get("gfx/dot-yellow.tga");
-		gfx_alpha_from_intensity("gfx/dot-yellow.tga");
-		gfx_upload_texture("gfx/dot-yellow.tga");
-	}
-	
+{	
 	glDisable(GL_LIGHTING);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
@@ -340,17 +301,6 @@ void map_draw_pacman_food(struct map *map, int x, int y)
 
 void map_draw_pacman_pill(struct map *map, int x, int y)
 {
-	static GLUquadricObj *sphere = NULL;
-
-	if(sphere == NULL)
-	{
-		sphere = gluNewQuadric();
-		gluQuadricNormals(sphere, GLU_SMOOTH);
-		gluQuadricTexture(sphere, GLU_FALSE);
-		gluQuadricOrientation(sphere, GLU_OUTSIDE);
-		gluQuadricDrawStyle(sphere, GLU_FILL);
-	}
-	
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
@@ -456,23 +406,16 @@ void map_render_opaque_objects(struct game *game)
 
 void map_draw_rocket_lightmap(struct game *game, int c)
 {
-	static struct image_rgba32 *texture = NULL;
 	struct shot *rocket;
 	int x, y;
 	
 	/* object plane coefficients (s, t, r, q) */
 	GLfloat params[4];
-
-	if(texture == NULL)
-	{
-		texture = gfx_get("gfx/rocket-highlight.tga");
-		gfx_upload_texture("gfx/rocket-highlight.tga");
-	}
 	
 	rocket = &game->shots[c];
 
 	/* set up texturing */
-	glBindTexture(GL_TEXTURE_2D, texture->id);
+	glBindTexture(GL_TEXTURE_2D, missile_texture->id);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);

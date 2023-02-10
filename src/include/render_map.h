@@ -22,6 +22,8 @@
 #ifndef _RENDER_MAP_H
 #define _RENDER_MAP_H
 
+extern void load_map_assets();
+
 void map_setup_wall(struct game *game, int x, int y);
 void map_lightmap_param_rocket(GLfloat params[4], struct game *game, int x, int y, int r);
 void map_draw_vertical_wall(struct game *game, int x, int y);

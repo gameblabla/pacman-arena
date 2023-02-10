@@ -142,7 +142,9 @@ void game_run(struct game *game)
 			game_draw_opaque_objects(game, c);
 			map_render_translucent_objects(game, c);
 			game_draw_translucent_objects(game, c);
+#ifndef LOW_END
 			game_draw_player_lives(game, c, (float)diff / 1000);
+#endif
 		}
 
 /*		

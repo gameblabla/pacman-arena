@@ -11,8 +11,8 @@ SRC_C		= $(foreach dir, $(SRCDIR), $(wildcard $(dir)/*.c))
 OBJ_C		= $(notdir $(patsubst %.c, %.o, $(SRC_C)))
 OBJS		= $(OBJ_C)
 
-CFLAGS		= -O0 -g3 -Wall -Wextra -I/usr/include/SDL -Wno-write-strings -Isrc -Isrc/include -I. -Iplatform/generic -IGLU/src/include
-CFLAGS		+= -DLSB_FIRST -std=gnu99 -DALIGN_DWORD -DNOYUV
+CFLAGS		= -O0 -g3 -pg -Wall -Wextra -I/usr/include/SDL -Wno-write-strings -Isrc -Isrc/include -I. -Iplatform/generic -IGLU/src/include
+CFLAGS		+= -DLSB_FIRST -std=gnu99 -DALIGN_DWORD -DNOYUV -DLOW_END
 CFLAGS		+=  -Ilib3ds
 
 ifeq ($(NETWORK), YES)

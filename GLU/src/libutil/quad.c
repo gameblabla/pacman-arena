@@ -37,7 +37,11 @@
 #include <GL/glu.h>
 
 /* Make it not a power of two to avoid cache thrashing on the chip */
+#ifdef LOW_END
+#define CACHE_SIZE	4
+#else
 #define CACHE_SIZE	240
+#endif
 
 #undef	PI
 #define PI	      3.14159265358979323846
@@ -715,10 +719,10 @@ gluSphere(GLUquadric *qobj, GLdouble radius, GLint slices, GLint stacks)
 
     if (slices >= CACHE_SIZE) slices = CACHE_SIZE-1;
     if (stacks >= CACHE_SIZE) stacks = CACHE_SIZE-1;
-    if (slices < 2 || stacks < 1 || radius < 0.0) {
+    /*if (slices < 2 || stacks < 1 || radius < 0.0) {
 	gluQuadricError(qobj, GLU_INVALID_VALUE);
 	return;
-    }
+    }*/
 
     /* Cache is the vertex locations cache */
     /* Cache2 is the various normals at the vertices themselves */
