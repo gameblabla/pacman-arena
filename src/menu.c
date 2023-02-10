@@ -196,17 +196,17 @@ void menu_run(void)
 	}
 }
 
+#ifndef NO_RESOLUTION_OPTION
 void menu_resolution(struct game *game)
 {
 	struct menu_entry menu_resolution[] = 
 		{
-			{ "gfx/320-240-high.tga", "gfx/320-240-low.tga", NULL, NULL },
 			{ "gfx/640-480-high.tga", "gfx/640-480-low.tga", NULL, NULL },
 			{ "gfx/800-600-high.tga", "gfx/800-600-low.tga", NULL, NULL },
 			{ "gfx/1024-768-high.tga", "gfx/1024-768-low.tga", NULL, NULL },
 			{ "gfx/1400-1050-high.tga", "gfx/1400-1050-low.tga", NULL, NULL }
 		};
-	int menu_resolution_num = 5;
+	int menu_resolution_num = 4;
 	int c, new_w = 0, new_h = 0;
 	
 	for(c = 0; c < menu_resolution_num; c++)
@@ -229,26 +229,21 @@ void menu_resolution(struct game *game)
 	switch(menu(game, menu_resolution, menu_resolution_num))
 	{
 	case 0:
-		new_w = 320;
-		new_h = 240;
-		break;
-		
-	case 1:
 		new_w = 640;
 		new_h = 480;
 		break;
 		
-	case 2:
+	case 1:
 		new_w = 800;
 		new_h = 600;
 		break;
 		
-	case 3:
+	case 2:
 		new_w = 1024;
 		new_h = 768;
 		break;
 		
-	case 4:
+	case 3:
 		new_w = 1400;
 		new_h = 1050;
 		break;
@@ -261,6 +256,7 @@ void menu_resolution(struct game *game)
 	screen_set_resolution(new_w, new_h);
 	screen_switch_resolution();
 }
+#endif
 
 int menu(struct game *game, struct menu_entry *m, int n)
 {

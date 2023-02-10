@@ -50,17 +50,21 @@ static float last_gamma;
 */
 void screen_init(void)
 {
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_NOPARACHUTE);
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO
+	#ifndef SDL2
+	| SDL_INIT_NOPARACHUTE
+	#endif
+	);
 	/* XXX - startup resolutions */
 	atexit(SDL_Quit);
 	
 	scr.width = SCREEN_WIDTH_GAME;
 	scr.height = SCREEN_HEIGHT_GAME;
 	scr.bpp = SCREEN_BITDEPTH_GAME;
-	#ifdef NO_FULLSCREEN
-	scr.fullscreen = 0;
-	#else
+	#ifdef FULLSCREEN
 	scr.fullscreen = SDL_FULLSCREEN;
+	#else
+	scr.fullscreen = 0;
 	#endif
 	scr.surface = NULL;
 	scr.viewports = NULL;
@@ -91,17 +95,32 @@ void screen_switch_resolution(void)
 	scr.surface = SDL_CreateWindow("Pacman Arena",
 	SDL_WINDOWPOS_UNDEFINED,
 	SDL_WINDOWPOS_UNDEFINED,
-	0, 0,
-	SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_OPENGL);
-	
-	scr.rend = SDL_CreateRenderer(scr.surface, -1, SDL_RENDERER_PRESENTVSYNC);
 
+#if !defined(FULLSCREEN)
+	SCREEN_WIDTH_GAME, SCREEN_HEIGHT_GAME,
+	SDL_WINDOW_SHOWN |
+#else
+	0, 0,
+	SDL_WINDOW_FULLSCREEN_DESKTOP |
+#endif
+	SDL_WINDOW_OPENGL);
+	
+	scr.rend = SDL_CreateRenderer(scr.surface, -1,
+#ifdef NOVSYNC
+	0
+#else
+	SDL_RENDERER_PRESENTVSYNC
+#endif
+	);
+	
+#if defined(FULLSCREEN)
 	// Set resolution to whatever the screen uses
 	SDL_DisplayMode DM;
 	SDL_GetCurrentDisplayMode(0, &DM);
 	scr.width = DM.w;
 	scr.height = DM.h;
-	
+#endif
+
 	//Nearest neighbor scaling
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, 0);
 	SDL_RenderSetLogicalSize(scr.rend, scr.width, scr.height);
@@ -112,16 +131,33 @@ void screen_switch_resolution(void)
 	SDL_RenderPresent(scr.rend);
 	
 #ifdef LOW_END
-    SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
+	SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
     SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 6 );
     SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 5 );
     SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
+    
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 1);
+    SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1); 
+#else
+    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32);
+    
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 8);
+    SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1); 
 #endif
-	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
-	
+    
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+	
+	SDL_GL_SetSwapInterval(1);
+	
 #else
 	scr.surface = SDL_SetVideoMode(scr.width, scr.height, scr.bpp, SDL_OPENGL | scr.fullscreen);
 	if(scr.surface == NULL)

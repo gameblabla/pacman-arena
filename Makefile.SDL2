@@ -10,7 +10,7 @@ SRC_C		= $(foreach dir, $(SRCDIR), $(wildcard $(dir)/*.c))
 OBJ_C		= $(notdir $(patsubst %.c, %.o, $(SRC_C)))
 OBJS		= $(OBJ_C)
 
-CFLAGS		= -O0 -g3 -Wall -Wextra -I/usr/include/SDL2 -Wno-write-strings -Isrc -Isrc/include -I. -Iplatform/generic
+CFLAGS		= -O0 -g3 -pg -Wall -Wextra -I/usr/include/SDL2 -Wno-write-strings -Isrc -Isrc/include -I. -Iplatform/generic
 CFLAGS		+= -DLSB_FIRST -std=gnu99 -DSDL2
 CFLAGS		+= -Ilib3ds
 

@@ -9,7 +9,7 @@ SRC_C		= $(foreach dir, $(SRCDIR), $(wildcard $(dir)/*.c))
 OBJ_C		= $(notdir $(patsubst %.c, %.o, $(SRC_C)))
 OBJS		= $(OBJ_C)
 
-CFLAGS		= -Os -fdata-sections -ffunction-sections -flto -Wall -Wextra 
+CFLAGS		= -O0 -g3
 CFLAGS		+= `/opt/gcw0-toolchain/mipsel-gcw0-linux-uclibc/sysroot/usr/bin/sdl2-config --cflags` -Wno-write-strings -Isrc -Isrc/include -I. -Iplatform/gcw0 -IGLU/src/include -IGLU/include
 CFLAGS		+= -DLSB_FIRST -std=gnu99 -DSDL2
 CFLAGS		+= -Ilib3ds
@@ -24,7 +24,7 @@ else ifeq ($(PROFILE), APPLY)
 CFLAGS		+= -fprofile-use -fbranch-probabilities
 endif
 
-LDFLAGS     = -lc -lgcc -lm -lSDL2 -lSDL2_mixer -lSDL2_image -lGL -s -flto -Wl,--as-needed -Wl,--gc-sections
+LDFLAGS     = -lc -lgcc -lm -lSDL2 -lSDL2_mixer -lSDL2_image -lGL -g3
 ifeq ($(NETWORK), YES)
 LDFLAGS 	+= -lSDL2_net
 endif

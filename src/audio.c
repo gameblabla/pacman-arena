@@ -31,7 +31,7 @@ static const char cvsid[] =
 #include "file.h"
 
 /* nº de canais de som */
-#define NUM_CHANNELS 16
+#define NUM_CHANNELS 8
 
 static Mix_Music *music;
 

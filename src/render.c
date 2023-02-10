@@ -433,8 +433,8 @@ void render_finish_frame(void)
 	glFlush();
 	
 #ifdef SDL2
-	SDL_GL_SwapWindow(scr.surface);
 	SDL_RenderPresent(scr.rend);
+	SDL_GL_SwapWindow(scr.surface);
 #else
 	SDL_GL_SwapBuffers();
 #endif

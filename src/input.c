@@ -31,11 +31,14 @@ static const char cvsid[] =
 #include "screen.h"
 
 #ifdef SDL2
-#define SDLK_LAST SDLK_ENDCALL
-char keyboard_map[SDLK_ENDCALL];
+#define SDLK_LAST SDL_NUM_SCANCODES
+#define KEYMAP ev.key.keysym.scancode
 #else
-char keyboard_map[SDLK_LAST];
+#define KEYMAP ev.key.keysym.sym
 #endif
+int keyboard_map[SDLK_LAST];
+
+
 
 void input_reset(void)
 {
@@ -49,29 +52,32 @@ void input_update(void)
 {
 	SDL_Event ev;
 	
+
 	while(SDL_PollEvent(&ev))
 	{
-		if(ev.type == SDL_QUIT)
-		{
-			SDL_Quit();
-			exit(0);
-		}
-
-		if(ev.type == SDL_KEYDOWN)
-		{
-			keyboard_map[ev.key.keysym.sym] = 1;
-
-			/* special hooks */
-			if(keyboard_map[SDLK_LALT] && keyboard_map[SDLK_RETURN])
+			switch(ev.type)
 			{
-				screen_toggle_fullscreen();
-				keyboard_map[SDLK_LALT] = 0;
-				keyboard_map[SDLK_RETURN] = 0;
+				case SDL_QUIT:
+					SDL_Quit();
+					exit(0);
+				break;
+				case SDL_KEYDOWN:
+
+					keyboard_map[KEYMAP] = 1;
+#ifndef SDL2
+					/* special hooks */
+					if(keyboard_map[SDLK_LALT] && keyboard_map[SDLK_RETURN])
+					{
+						screen_toggle_fullscreen();
+						keyboard_map[SDLK_LALT] = 0;
+						keyboard_map[SDLK_RETURN] = 0;
+					}
+#endif
+				break;
+				case SDL_KEYUP:
+					keyboard_map[KEYMAP] = 0;
+				break;
 			}
-		}
-		
-		if(ev.type == SDL_KEYUP)
-			keyboard_map[ev.key.keysym.sym] = 0;
 	}
 }
 
@@ -82,9 +88,13 @@ int input_kstate(int ksym)
 {
 	if(ksym < 0 || ksym >= SDLK_LAST)
 	{
+#ifdef SDL2
+		ksym = 0;
+#else
 		printf("input_kstate: invalid ksym %d\n", ksym);
 		SDL_Quit();
 		exit(1);
+#endif
 	}
 	
 	return keyboard_map[ksym];
@@ -97,9 +107,13 @@ void input_kclear(int ksym)
 {
 	if(ksym < 0 || ksym >= SDLK_LAST)
 	{
-		printf("input_kclear: invalid ksym %d\n", ksym);
+#ifdef SDL2
+		ksym = 0;
+#else
+		printf("input_kstate: invalid ksym %d\n", ksym);
 		SDL_Quit();
 		exit(1);
+#endif
 	}
 	
 	keyboard_map[ksym] = 0;
