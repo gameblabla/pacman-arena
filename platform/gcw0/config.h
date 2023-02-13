@@ -1,9 +1,11 @@
+// 0 tells it to use whatever is available
 #define SCREEN_WIDTH_GAME 320
 #define SCREEN_HEIGHT_GAME 240
+
 #define SCREEN_BITDEPTH_GAME 16
 
 #define NO_RESOLUTION_OPTION 1
-//#define FULLSCREEN 1
+#define FULLSCREEN 1
 #define LOW_END 1
 #define NOVSYNC 1
 
