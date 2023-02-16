@@ -20,17 +20,7 @@
 static const char cvsid[] = 
   "$Id: menu.c,v 1.26 2003/11/30 17:43:55 nsubtil Exp $";
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
-#include <GL/gl.h>
-#include <SDL.h>
-#ifdef NETWORKING_GAME
-#include <SDL_net.h>
-#endif
-#include <stdlib.h>
-#include <math.h>
+#include "common.h" // Default headers
 
 #include "object.h"
 #include "game.h"

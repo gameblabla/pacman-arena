@@ -20,15 +20,7 @@
 static const char cvsid[] = 
   "$Id: ghost.c,v 1.21 2003/11/22 17:07:42 nsubtil Exp $";
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
-#include <GL/gl.h>
-#include <SDL.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "common.h" // Default headers
 
 #include "m_math.h"
 #include "object.h"

@@ -20,15 +20,7 @@
 static const char cvsid[] =
   "$Id: gfx.c,v 1.11 2003/11/22 17:32:09 nsubtil Exp $";
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "common.h" // Default headers
 
 #include "linked-lists.h"
 #include "file.h"
@@ -256,9 +248,11 @@ void gfx_add(struct image_rgba32 *new)
 	LLIST_ADD(struct image_rgba32, images, new);
 }
 
+
 /*
   carrega uma textura na placa gráfica
 */
+#ifndef NO_MIPMAP
 GLuint gfx_upload_texture(char *name)
 {
 	struct image_rgba32 *texture;
@@ -289,10 +283,16 @@ GLuint gfx_upload_texture(char *name)
 	return id;
 }
 
+
 /*
   carrega uma textura sem filtragem & afins
 */
+
 GLuint gfx_upload_texture_nofilter(char *name)
+#else
+GLuint gfx_upload_texture(char *name)
+#endif
+
 {
 	struct image_rgba32 *texture;
 	GLuint id;
@@ -352,10 +352,14 @@ void gfx_reload_all(void)
 	cur = images;
 	while(cur)
 	{
+		#ifdef NO_MIPMAP
+			gfx_upload_texture(cur->name);
+		#else
 		if(cur->filtered)
 			gfx_upload_texture(cur->name);
 		else
 			gfx_upload_texture_nofilter(cur->name);
+		#endif
 
 		cur = cur->next;
 	}

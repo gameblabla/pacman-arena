@@ -5,14 +5,14 @@ CC			= gcc
 NETWORK		= NO
 
 SRCDIR		= ./lib3ds ./src ./src/main
-SRCDIR		+= ./GLU/src/libutil GLU/src/libtess GLU/src/libnurbs/interface GLU/src/libnurbs/internals GLU/src/libnurbs/nurbtess
+SRCDIR		+= ./GLU/src/libutil/quad ./GLU/src/libutil
 VPATH		= $(SRCDIR)
 SRC_C		= $(foreach dir, $(SRCDIR), $(wildcard $(dir)/*.c))
 OBJ_C		= $(notdir $(patsubst %.c, %.o, $(SRC_C)))
 OBJS		= $(OBJ_C)
 
-CFLAGS		= -O0 -g3 -pg -Wall -Wextra -I/usr/include/SDL -Wno-write-strings -Isrc -Isrc/include -I. -Iplatform/generic -IGLU/src/include
-CFLAGS		+= -DLSB_FIRST -std=gnu99 -DALIGN_DWORD -DNOYUV -DLOW_END
+CFLAGS		= -O0 -g3 -pg -Wall -Wextra -I/usr/include/SDL -Wno-write-strings -Isrc -Isrc/include -I. -Iplatform/generic -IGLU/src/libutil -IGLU/src/include
+CFLAGS		+= -DLSB_FIRST -std=gnu99 -DLOW_END
 CFLAGS		+=  -Ilib3ds
 
 ifeq ($(NETWORK), YES)

@@ -54,6 +54,7 @@ static int audio_mute_music = 0;
 */
 void audio_init(void)
 {
+#ifndef NOSOUND
 	if(Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 512 * 4) == -1)
 	{
 		printf("erro: audio_init: Mix_OpenAudio() -> %s\n", Mix_GetError());
@@ -62,6 +63,7 @@ void audio_init(void)
 	}
 
 	Mix_AllocateChannels(NUM_CHANNELS);
+#endif
 }
 
 /*
@@ -70,6 +72,7 @@ void audio_init(void)
 */
 void audio_play_music(char *fname)
 {
+#ifndef NOSOUND
 	if(audio_mute_music)
 		return;
 	
@@ -87,6 +90,7 @@ void audio_play_music(char *fname)
 		SDL_Quit();
 		exit(1);
 	}
+#endif
 }
 
 /*
@@ -95,7 +99,9 @@ void audio_play_music(char *fname)
 */
 void audio_pause_music(void)
 {
+#ifndef NOSOUND
 	Mix_PauseMusic();
+#endif
 }
 
 /*
@@ -104,7 +110,9 @@ void audio_pause_music(void)
 */
 void audio_resume_music(void)
 {
+#ifndef NOSOUND
 	Mix_ResumeMusic();
+#endif
 }
 
 /*
@@ -113,12 +121,16 @@ void audio_resume_music(void)
 */
 void audio_stop_music(void)
 {
+#ifndef NOSOUND
 	Mix_HaltMusic();
+#endif
 }
 
 void audio_fade_music(int msec)
 {
+#ifndef NOSOUND
 	Mix_FadeOutMusic(msec);
+#endif
 }
 
 /*
@@ -127,6 +139,7 @@ void audio_fade_music(int msec)
 */
 struct audio_sample *audio_find_sample(char *name)
 {
+#ifndef NOSOUND
 	struct audio_sample *cur;
 	
 	cur = samples;
@@ -137,8 +150,9 @@ struct audio_sample *audio_find_sample(char *name)
 		
 		cur = cur->next;
 	}
-	
+#endif
 	return NULL;
+
 }
 
 /*
@@ -147,6 +161,7 @@ struct audio_sample *audio_find_sample(char *name)
 */
 void audio_play_sample(char *name)
 {
+#ifndef NOSOUND
 	struct audio_sample *sm;
 	
 	sm = audio_find_sample(name);
@@ -171,4 +186,5 @@ void audio_play_sample(char *name)
 		return;
 	
 	Mix_PlayChannel(-1, sm->sample, 0);
+#endif
 }

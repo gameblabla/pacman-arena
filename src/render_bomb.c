@@ -20,13 +20,7 @@
 static const char cvsid[] =
   "$Id: render_bomb.c,v 1.2 2003/11/30 17:43:55 nsubtil Exp $";
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
-#include <SDL.h>
-#include <GL/gl.h>
-#include <stdio.h>
+#include "common.h" // Default headers
 
 #include "object.h"
 #include "game.h"

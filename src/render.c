@@ -20,16 +20,7 @@
 static const char cvsid[] =
   "$Id: render.c,v 1.46 2003/11/22 17:32:10 nsubtil Exp $";
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
-#include <SDL.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
+#include "common.h" // Default headers
 
 #include "linked-lists.h"
 #include "object.h"
@@ -291,7 +282,7 @@ void render_setup(struct game *game, int player_no)
 		  -1.0 * (GLfloat)vp->height / (GLfloat)vp->width,
 		  1.0 * (GLfloat)vp->height / (GLfloat)vp->width, 1.0, 70.0);
 
-	gluLookAt(camera->pos[X], camera->pos[Y], camera->pos[Z],
+	mygluLookAt(camera->pos[X], camera->pos[Y], camera->pos[Z],
 		  camera->dir[X], camera->dir[Y], camera->dir[Z],
 		  camera->pos[X] - camera->up[X],
 		  camera->pos[Y] - camera->up[Y],
@@ -431,12 +422,15 @@ void render_draw_colored_plane(GLfloat x, GLfloat y, GLfloat z, GLfloat color[3]
 void render_finish_frame(void)
 {
 	glFlush();
-	
+#if defined(PSP2)
+	vglSwapBuffers(GL_FALSE);
+#else
 #ifdef SDL2
 	//SDL_RenderPresent(scr.rend);
 	SDL_GL_SwapWindow(scr.surface);
 #else
 	SDL_GL_SwapBuffers();
+#endif
 #endif
 }
 

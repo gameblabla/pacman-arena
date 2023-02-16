@@ -19,18 +19,12 @@
 
 static const char cvsid[] = 
   "$Id: main.c,v 1.60 2003/11/27 22:11:57 nsubtil Exp $";
+  
+#include "common.h"
 
-#ifdef _WIN32
-#include <windows.h>
+#ifdef PSP2
+int _newlib_heap_size_user = 256 * 1024 * 1024;
 #endif
-
-#include <GL/gl.h>
-#include <SDL.h>
-#ifdef NETWORKING_GAME
-#include <SDL_net.h>
-#endif
-#include <stdlib.h>
-#include <string.h>
 
 #include "audio.h"
 #include "object.h"
@@ -49,9 +43,8 @@ int main(int argc, char **argv)
 	render_reshape_window(screen->w, screen->h);
 */
 
-	srand(SDL_GetTicks());
-
 	screen_init();
+	srand(SDL_GetTicks()); // Do it after SDL has been initiliazed
 	audio_init();
 	
 	load_map_assets();

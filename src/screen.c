@@ -20,15 +20,7 @@
 static const char cvsid[] = 
   "$Id: screen.c,v 1.7 2003/11/30 17:43:55 nsubtil Exp $";
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
-#include <SDL.h>
-#include <SDL_opengl.h>
-#include <GL/gl.h>
-
-#include <stdlib.h>
+#include "common.h" // Default headers
 #include <assert.h>
 
 #include "object.h"
@@ -92,6 +84,14 @@ void screen_switch_resolution(void)
 	gfx_unload_all();
 	object_release_dlists();
 	
+#ifdef PSP2	
+	// Initializing graphics device
+	vglInit(0x800000);
+	// Enabling V-Sync
+	vglWaitVblankStart(GL_TRUE);
+	chdir("ux0:app/PACM00001");
+#else
+
 #ifdef LOW_END
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
     SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 6);
@@ -118,10 +118,11 @@ void screen_switch_resolution(void)
     SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1); 
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 #endif
+
+#ifdef SDL2
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 	
-#ifdef SDL2
 	scr.surface = SDL_CreateWindow("Pacman Arena",
 	SDL_WINDOWPOS_UNDEFINED,
 	SDL_WINDOWPOS_UNDEFINED,
@@ -171,6 +172,8 @@ void screen_switch_resolution(void)
 	}
 #endif
 
+
+#endif
 
 	screen_setup_viewports();
 
@@ -322,10 +325,12 @@ void screen_update_gamma(float delta)
 
 	if(last_gamma != gamma)
 	{
+		#ifndef PSP2
 		#ifdef SDL2
 		SDL_SetWindowBrightness(scr.surface, gamma);
 		#else
 		SDL_SetGamma(gamma, gamma, gamma);
+		#endif
 		#endif
 		last_gamma = gamma;
 	}
@@ -334,9 +339,11 @@ void screen_update_gamma(float delta)
 void screen_reset_gamma(void)
 {
 	cur_gamma = target_gamma = last_gamma = 1.0;
+	#ifndef PSP2
 	#ifdef SDL2
 	SDL_SetWindowBrightness(scr.surface, cur_gamma);
 	#else
 	SDL_SetGamma(cur_gamma, cur_gamma, cur_gamma);
+	#endif
 	#endif
 }

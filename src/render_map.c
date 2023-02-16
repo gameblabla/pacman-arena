@@ -20,17 +20,13 @@
 static const char cvsid[] =
   "$Id: render_map.c,v 1.4 2003/11/30 17:43:55 nsubtil Exp $";
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
+#include "common.h" // Default headers
 
-#include <SDL.h>
-#include <GL/gl.h>
+#ifdef PSP2
+#include "vita_GLU.h"
+#else
 #include <GL/glu.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <math.h>
+#endif
 
 #include "object.h"
 #include "game.h"

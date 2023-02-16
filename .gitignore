@@ -1,5 +1,9 @@
-*.elf
-*.opk
-*.a
-*.gcda
 *.o
+release/
+*.a
+*.opk
+*.zip
+*.elf
+*.out
+*.bin
+*.sfo

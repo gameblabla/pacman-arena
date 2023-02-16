@@ -4,14 +4,14 @@ NETWORK		= NO
 PROFILE		= APPLY
 
 SRCDIR		= ./lib3ds ./src ./src/main 
-SRCDIR		+= ./GLU/src/libutil GLU/src/libtess GLU/src/libnurbs/interface GLU/src/libnurbs/internals GLU/src/libnurbs/nurbtess
+SRCDIR		+= ./GLU/src/libutil GLU/src/libtess GLU/src/libnurbs/interface GLU/src/libnurbs/internals GLU/src/libnurbs/nurbtess ./GLU/src/libutil/quad
 VPATH		= $(SRCDIR)
 SRC_C		= $(foreach dir, $(SRCDIR), $(wildcard $(dir)/*.c))
 OBJ_C		= $(notdir $(patsubst %.c, %.o, $(SRC_C)))
 OBJS		= $(OBJ_C)
 
 CFLAGS		= -Ofast -flto -fdata-sections -ffunction-sections  -fipa-pta
-CFLAGS		+= `/opt/gcw0-toolchain/mipsel-gcw0-linux-uclibc/sysroot/usr/bin/sdl2-config --cflags` -Wno-write-strings -Isrc -Isrc/include -I. -Iplatform/gcw0 -IGLU/src/include -IGLU/include
+CFLAGS		+= `/opt/gcw0-toolchain/mipsel-gcw0-linux-uclibc/sysroot/usr/bin/sdl2-config --cflags` -Wno-write-strings -Isrc -Isrc/include -I. -Iplatform/gcw0 -IGLU/src/include -IGLU/include -IGLU/src/libutil
 CFLAGS		+= -DLSB_FIRST -std=gnu99 -DSDL2 -DLOW_END
 CFLAGS		+= -Ilib3ds
 

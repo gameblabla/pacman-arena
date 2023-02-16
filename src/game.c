@@ -20,16 +20,7 @@
 static const char cvsid[] =
   "$Id: game.c,v 1.71 2003/11/30 17:43:55 nsubtil Exp $";
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <SDL.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
+#include "common.h" // Default headers
 
 #include "object.h"
 #include "audio.h"
@@ -211,7 +202,7 @@ void game_draw_player_lives(struct game *game, int player_no, float delta)
 
 		glFrustum(-1.0, 1.0,
 			  -1.0, 1.0, 1.5, 3.0);
-		gluLookAt(0.0, 0.0, 0.0,
+		mygluLookAt(0.0, 0.0, 0.0,
 			  0.0, 0.0, 1.0,
 			  0.0, 1.0, 0.0);
 

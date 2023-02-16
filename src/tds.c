@@ -17,13 +17,7 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
-#include <GL/gl.h>
-#include <stdlib.h>
-#include <string.h>
+#include "common.h" // Default headers
 
 /* lib3ds */
 #include <file.h>

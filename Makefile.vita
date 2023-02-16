@@ -1,18 +1,21 @@
-PRGNAME     = pacmanarena
+TARGET     = pacmanarena
 CC			= arm-vita-eabi-gcc
 NETWORK		= NO
 PROFILE		= 0
+RELEASE_DIR = release
+TITLE_ID	= PACM00001
 
 SRCDIR		= ./lib3ds ./src ./src/main 
-SRCDIR		+= ./GLU/src/libutil GLU/src/libtess GLU/src/libnurbs/interface GLU/src/libnurbs/internals GLU/src/libnurbs/nurbtess
+SRCDIR		+= ./GLU/src/libutil/quad
+#GLU/src/libtess GLU/src/libnurbs/interface GLU/src/libnurbs/internals GLU/src/libnurbs/nurbtess
 VPATH		= $(SRCDIR)
 SRC_C		= $(foreach dir, $(SRCDIR), $(wildcard $(dir)/*.c))
 OBJ_C		= $(notdir $(patsubst %.c, %.o, $(SRC_C)))
 OBJS		= $(OBJ_C)
 
-CFLAGS		= -Os  -flto
-CFLAGS		+= `/home/anonymous/Documents/DEV/vitasdk/arm-vita-eabi/bin/sdl2-config --cflags` -Wno-write-strings -Isrc -Isrc/include -I. -Iplatform/gcw0 -IGLU/src/include -IGLU/include
-CFLAGS		+= -DLSB_FIRST -std=gnu99 -DSDL2 -DLOW_END -DPSP2
+CFLAGS		= -O2 -fno-PIC -fno-PIE -flto
+CFLAGS		+= `$(VITASDK)/arm-vita-eabi/bin/sdl2-config --cflags` -Wno-write-strings -Isrc -Isrc/include -I. -Iplatform/vita -IGLU/src/libutil -IGLU/src/include
+CFLAGS		+= -DLSB_FIRST -std=gnu99 -DSDL2 -DPSP2 -DNO_MIPMAP
 CFLAGS		+= -Ilib3ds
 
 ifeq ($(NETWORK), YES)
@@ -25,22 +28,37 @@ else ifeq ($(PROFILE), APPLY)
 CFLAGS		+= -fprofile-use="./" -fbranch-probabilities
 endif
 
-LDFLAGS     = -lc -lgcc -lm -lSDL2 -lSDL2_mixer -lSDL2_image -lvitaGL -lSceGxm_stub -lvitashark -lSceShaccCg_stub -lSceShaccCgExt -ltaihen_stub -lmathneon
+LDFLAGS     = -Wl,--start-group -lc -lgcc -lm -lSDL2 -lSDL2_mixer -lvitaGL -lSceGxm_stub -lvitashark -lSceShaccCg_stub -lSceShaccCgExt -ltaihen_stub -lmathneon
 LDFLAGS		+= -lSceKernelDmacMgr_stub -lSceDisplay_stub -lSceAppMgr_stub -lSceCommonDialog_stub -lSceTouch_stub -lSceTouchForDriver_stub -lSceAudio_stub -lSceMotion_stub
-LDFLAGS		+= -lSceHid_stub -lSceHidForDriver_stub -lSceCtrl_stub -lSceAudioIn_stub -lSceIme_stub -flto -Wl,-z,nocopyreloc -Wl,--as-needed
+LDFLAGS		+= -lSceHid_stub -lSceHidForDriver_stub -lSceCtrl_stub -lSceAudioIn_stub -lSceIme_stub -lmikmod -logg -lFLAC -pthread -lvorbis -lmpg123 -lmodplug -lstdc++ -lvorbisfile -Wl,--end-group -flto -Wl,-z,nocopyreloc -Wl,--as-needed -no-pie
 ifeq ($(NETWORK), YES)
 LDFLAGS 	+= -lSDL2_net
 endif
 
 # Rules to make executable
-$(PRGNAME): $(OBJS)  
-	$(CC) -Wl,-q $(CFLAGS) $^ -Wl,--start-group $(LDFLAGS) -Wl,--end-group -o $(PRGNAME).elf
+$(TARGET): $(OBJS)  
+	$(CC) -Wl,-q $(CFLAGS) $^ $(LDFLAGS)  -o $(TARGET).elf
 
-vita:
-	vita-elf-create $(PRGNAME).elf $(PRGNAME).velf
+vpk:
+	vita-elf-create $(TARGET).elf $(TARGET).velf
+	vita-make-fself $(TARGET).velf eboot.bin
+	vita-mksfoex -s TITLE_ID=$(TITLE_ID) "$(TARGET)" param.sfo
+	rm -rf $(RELEASE_DIR)
+	mkdir -p $(RELEASE_DIR)/sce_sys/livearea/contents
+	cp psvita/sce_sys/icon0.png $(RELEASE_DIR)/sce_sys/
+	cp psvita/sce_sys/livearea/contents/bg.png $(RELEASE_DIR)/sce_sys/livearea/contents/
+	cp psvita/sce_sys/livearea/contents/startup.png $(RELEASE_DIR)/sce_sys/livearea/contents/
+	cp psvita/sce_sys/livearea/contents/template.xml $(RELEASE_DIR)/sce_sys/livearea/contents/
+	cp param.sfo $(RELEASE_DIR)/sce_sys/
+	cp eboot.bin $(RELEASE_DIR)
+	cp -r sfx $(RELEASE_DIR)
+	cp -r gfx $(RELEASE_DIR)
+	cd $(RELEASE_DIR) && zip -r ../$(RELEASE_DIR).vpk . && cd ..
+	echo
+	echo File $(RELEASE_DIR).vpk" created"
 
 $(OBJ_CP) : %.o : %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	rm -f $(PRGNAME) *.o
+	rm -f $(TARGET).elf *.o *.velf eboot.bin

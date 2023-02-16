@@ -20,14 +20,7 @@
 static const char cvsid[] =
   "$Id: math.c,v 1.13 2003/11/22 17:32:09 nsubtil Exp $";
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
-#include <GL/gl.h>
-#include <stdio.h>
-#include <math.h>
-
+#include "common.h" // Default headers
 #include "object.h"
 #include "m_math.h"
 

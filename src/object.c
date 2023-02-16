@@ -20,16 +20,7 @@
 static const char cvsid[] =
   "$Id: object.c,v 1.26 2003/11/23 00:06:39 nsubtil Exp $";
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <SDL.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
+#include "common.h" // Default headers
 
 #include "linked-lists.h"
 #include "object.h"

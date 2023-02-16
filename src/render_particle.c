@@ -20,13 +20,7 @@
 static const char cvsid[] =
   "$Id: render_particle.c,v 1.2 2003/11/22 17:32:10 nsubtil Exp $";
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
-#include <GL/gl.h>
-#include <stdlib.h>
-#include <stdio.h>
+#include "common.h" // Default headers
 
 #include "game.h"
 #include "player.h"
