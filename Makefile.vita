@@ -1,0 +1,46 @@
+PRGNAME     = pacmanarena
+CC			= arm-vita-eabi-gcc
+NETWORK		= NO
+PROFILE		= 0
+
+SRCDIR		= ./lib3ds ./src ./src/main 
+SRCDIR		+= ./GLU/src/libutil GLU/src/libtess GLU/src/libnurbs/interface GLU/src/libnurbs/internals GLU/src/libnurbs/nurbtess
+VPATH		= $(SRCDIR)
+SRC_C		= $(foreach dir, $(SRCDIR), $(wildcard $(dir)/*.c))
+OBJ_C		= $(notdir $(patsubst %.c, %.o, $(SRC_C)))
+OBJS		= $(OBJ_C)
+
+CFLAGS		= -Os  -flto
+CFLAGS		+= `/home/anonymous/Documents/DEV/vitasdk/arm-vita-eabi/bin/sdl2-config --cflags` -Wno-write-strings -Isrc -Isrc/include -I. -Iplatform/gcw0 -IGLU/src/include -IGLU/include
+CFLAGS		+= -DLSB_FIRST -std=gnu99 -DSDL2 -DLOW_END -DPSP2
+CFLAGS		+= -Ilib3ds
+
+ifeq ($(NETWORK), YES)
+CFLAGS 		+= -DNETWORKING_GAME
+endif
+
+ifeq ($(PROFILE), YES)
+CFLAGS 		+= -fprofile-generate=./
+else ifeq ($(PROFILE), APPLY)
+CFLAGS		+= -fprofile-use="./" -fbranch-probabilities
+endif
+
+LDFLAGS     = -lc -lgcc -lm -lSDL2 -lSDL2_mixer -lSDL2_image -lvitaGL -lSceGxm_stub -lvitashark -lSceShaccCg_stub -lSceShaccCgExt -ltaihen_stub -lmathneon
+LDFLAGS		+= -lSceKernelDmacMgr_stub -lSceDisplay_stub -lSceAppMgr_stub -lSceCommonDialog_stub -lSceTouch_stub -lSceTouchForDriver_stub -lSceAudio_stub -lSceMotion_stub
+LDFLAGS		+= -lSceHid_stub -lSceHidForDriver_stub -lSceCtrl_stub -lSceAudioIn_stub -lSceIme_stub -flto -Wl,-z,nocopyreloc -Wl,--as-needed
+ifeq ($(NETWORK), YES)
+LDFLAGS 	+= -lSDL2_net
+endif
+
+# Rules to make executable
+$(PRGNAME): $(OBJS)  
+	$(CC) -Wl,-q $(CFLAGS) $^ -Wl,--start-group $(LDFLAGS) -Wl,--end-group -o $(PRGNAME).elf
+
+vita:
+	vita-elf-create $(PRGNAME).elf $(PRGNAME).velf
+
+$(OBJ_CP) : %.o : %.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+clean:
+	rm -f $(PRGNAME) *.o

@@ -25,6 +25,7 @@ static const char cvsid[] =
 #endif
 
 #include <SDL.h>
+#include <SDL_opengl.h>
 #include <GL/gl.h>
 
 #include <stdlib.h>
@@ -91,6 +92,35 @@ void screen_switch_resolution(void)
 	gfx_unload_all();
 	object_release_dlists();
 	
+#ifdef LOW_END
+    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
+    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 6);
+    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
+    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 0);
+
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 1);
+    SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1); 
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 0);
+#else
+    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32);
+
+
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 8);
+    SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1); 
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+#endif
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+	
 #ifdef SDL2
 	scr.surface = SDL_CreateWindow("Pacman Arena",
 	SDL_WINDOWPOS_UNDEFINED,
@@ -129,38 +159,6 @@ void screen_switch_resolution(void)
 	SDL_SetRenderDrawColor(scr.rend, 0, 0, 0, 255);
 	SDL_RenderClear(scr.rend);
 	SDL_RenderPresent(scr.rend);
-
-	
-#ifdef LOW_END
-    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
-    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 6);
-    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
-    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 0);
-
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 1);
-    SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1); 
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 0);
-#else
-    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
-
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32);
-
-
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 8);
-    SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1); 
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-#endif
-    
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 	
 #else
 	scr.surface = SDL_SetVideoMode(scr.width, scr.height, scr.bpp, SDL_OPENGL | scr.fullscreen);
